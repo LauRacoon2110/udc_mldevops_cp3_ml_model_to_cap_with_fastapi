@@ -8,3 +8,4 @@ uvicorn
 gunicorn
 jupyter
 jupyterlab
+ydata_profiling

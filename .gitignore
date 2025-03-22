@@ -1,3 +1,9 @@
+# Custom
+.vscode/
+.scratch/
+.origin/
+.idea/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
