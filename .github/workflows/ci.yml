@@ -12,8 +12,8 @@ permissions:
 jobs:
   lint-and-test:
     runs-on: ubuntu-latest
-    env: 
-      PYTHONPATH: src
+    # env: 
+    #   PYTHONPATH: src
 
     steps:
       - name: Checkout code
@@ -43,4 +43,6 @@ jobs:
 
       - name: Run tests with pytest
         run: |
-          pytest
+            run: |
+              PYTHONPATH=src
+              pytest
