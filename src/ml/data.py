@@ -1,11 +1,26 @@
+# type: ignore
+# noqa
+from typing import List, Optional, Tuple
+
 import numpy as np
+import pandas as pd
 from sklearn.preprocessing import LabelBinarizer, OneHotEncoder
 
 
 def process_data(
-    X, categorical_features=[], label=None, training=True, encoder=None, lb=None
-):
-    """ Process the data used in the machine learning pipeline.
+    X: pd.DataFrame,
+    categorical_features: List[str] = [],
+    label: Optional[str] = None,
+    training: bool = True,
+    encoder: Optional[OneHotEncoder] = None,
+    lb: Optional[LabelBinarizer] = None,
+) -> Tuple[
+    np.ndarray,
+    np.ndarray,
+    Optional[OneHotEncoder],
+    Optional[LabelBinarizer],
+]:
+    """Process the data used in the machine learning pipeline.
 
     Processes the data using one hot encoding for the categorical features and a
     label binarizer for the labels. This can be used in either training or
@@ -67,4 +82,5 @@ def process_data(
             pass
 
     X = np.concatenate([X_continuous, X_categorical], axis=1)
+
     return X, y, encoder, lb
