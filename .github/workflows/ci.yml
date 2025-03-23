@@ -1,4 +1,4 @@
-name: Random Forest Classifier with FastAPI
+name: CI - Lint & Test Random Forest API
 
 on:
   push:
@@ -10,8 +10,10 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  lint-and-test:
     runs-on: ubuntu-latest
+    env: 
+      PYTHONPATH: ${{ github.workspace }}/src
 
     steps:
       - name: Checkout code
@@ -41,5 +43,4 @@ jobs:
 
       - name: Run tests with pytest
         run: |
-          export PYTHONPATH=$PYTHONPATH:$(pwd)/src
           pytest
