@@ -1,0 +1,40 @@
+{
+    "train_test_model": {
+        "random_state": 42,
+        "test_size": 0.2,
+        "categorical_features": [
+            "workclass",
+            "education",
+            "marital-status",
+            "occupation",
+            "relationship",
+            "race",
+            "sex",
+            "native-country"
+        ],
+        "target_label": "salary",
+        "slice_features": [
+            "age",
+            "sex",
+            "race",
+            "education",
+            "native-country"
+        ]
+    },
+    "file_path": {
+        "data": {
+            "data_raw": "data/census.csv",
+            "data_cls": "data/census_cls.csv"
+        },
+        "model": {
+            "model": "model/model.pkl",
+            "encoder": "model/encoder.pkl",
+            "lb": "model/lb.pkl"
+        },
+        "eval": {
+            "profiling_report": "data/census_cls_data_profiling_report.html",
+            "metrics_overall": "model/overall_output.txt",
+            "metrics_sliced": "model/sliced_output.txt"
+        }
+    }
+}
