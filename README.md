@@ -1,81 +1,156 @@
-# udc_mldevops_cp3_ml_model_to_cap_with_fastapi
-Udacity ML DevOps Engineer Nanodegree | Capstone Project 3 | Deploying an ML Model to Cloud Application Platform with FastAPI
+# Salary Prediction API with ML & FastAPI
+
+A full ML Ops-capable project that trains and deploys a **Random Forest Classifier** to predict whether an individual's annual income exceeds $50K based on U.S. Census data. The pipeline includes data preprocessing, model training, evaluation, slice-based performance analysis, and deployment via a FastAPI-based REST API.
+
+---
+
+## Project Structure
+
+```
+.
+├── data/                    # Cleaned data & profiling report
+├── model/                   # Trained model, encoder, and output metrics
+├── screenshots/             # Screenshots for documentation
+├── src/                     # Core Modules to clean data, train the model and corresponding utils
+│   ├── ml/                  # Core ML modules (data prep, model logic)
+├── tests/                   # Unit tests
+├── .pre-commit-config.yaml  # Linting and formatting automation
+├── config.json              # Centralized project config
+├── main.py                  # FastAPI application
+├── model_card.md            # Model Card with performance metrics
+├── requirements.txt         # Required Python packages
+├── sanitycheck.py           # Script to validate rubric requirements are met
+└── README.md                # This file
+```
+
+---
+
+## Model Overview
+
+- **Algorithm**: RandomForestClassifier (`scikit-learn`)
+- **Dataset**: [UCI Census Income Dataset](https://archive.ics.uci.edu/dataset/20/census+income)
+- **Target**: Binary classification (`>50K` / `<=50K`)
+- **Features**: Age, education, marital status, occupation, etc.
+- **Preprocessing**: Missing value handling, encoding, profiling
+
+### Metrics (Overall)
+- **Precision**: `0.7373`  
+- **Recall**: `0.6460`  
+- **F1 Score (F-beta with β=1)**: `0.6886` 
+
+### Slice Metrics
+Model performance was also evaluated across slices of categorical features like `age`, `education`, `sex`, and `occupation`.  
+See: [`model/sliced_output.txt`](./model/sliced_output.txt)
+
+---
+
+## API Endpoints
+
+| Endpoint       | Method | Description                        |
+|----------------|--------|------------------------------------|
+| `/`            | GET    | Welcome message                    |
+| `/predict`     | POST   | Predict income class from features |
+
+Docs: visit [http://localhost:8000/docs](http://localhost:8000/docs) for Swagger UI.
 
 
-# Instructions
+---
 
-Working in a command line environment is recommended for ease of use with git and dvc. If on Windows, WSL1 or 2 is recommended.
+## Installation
 
-# Environment Set up
-* Download and install conda if you don’t have it already.
-    * Use the supplied requirements file to create a new environment, or
-    * conda create -n [envname] "python=3.8" scikit-learn dvc pandas numpy pytest jupyter jupyterlab fastapi uvicorn -c conda-forge
-    * Install git either through conda (“conda install git”) or through your CLI, e.g. sudo apt-get git.
+### 1. Python Version
 
-## Repositories
+```bash
+python --version  # Expected: Python 3.8+
+```
 
-* Create a directory for the project and initialize Git and DVC.
-   * As you work on the code, continually commit changes. Trained models you want to keep must be committed to DVC.
-* Connect your local Git repository to GitHub.
+If you're using `pyenv`, your `.python-version` is already set.
 
-## Set up S3
+---
 
-* In your CLI environment install the<a href="https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html" target="_blank"> AWS CLI tool</a>.
-* In the navigation bar in the Udacity classroom select **Open AWS Gateway** and then click **Open AWS Console**. You will not need the AWS Access Key ID or Secret Access Key provided here.
-* From the Services drop down select S3 and then click Create bucket.
-* Give your bucket a name, the rest of the options can remain at their default.
+### 2. Create and Activate a Virtual Environment
 
-To use your new S3 bucket from the AWS CLI you will need to create an IAM user with the appropriate permissions. The full instructions can be found <a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users_create.html#id_users_create_console" target="_blank">here</a>, what follows is a paraphrasing:
+```bash
+python -m venv .venv
+source .venv/bin/activate      # Windows: .venv\Scripts\activate
+```
 
-* Sign in to the IAM console <a href="https://console.aws.amazon.com/iam/" target="_blank">here</a> or from the Services drop down on the upper navigation bar.
-* In the left navigation bar select **Users**, then choose **Add user**.
-* Give the user a name and select **Programmatic access**.
-* In the permissions selector, search for S3 and give it **AmazonS3FullAccess**
-* Tags are optional and can be skipped.
-* After reviewing your choices, click create user. 
-* Configure your AWS CLI to use the Access key ID and Secret Access key.
+---
 
-## GitHub Actions
+### 3. Install Required Packages
 
-* Setup GitHub Actions on your repository. You can use one of the pre-made GitHub Actions if at a minimum it runs pytest and flake8 on push and requires both to pass without error.
-   * Make sure you set up the GitHub Action to have the same version of Python as you used in development.
-* Add your <a href="https://github.com/marketplace/actions/configure-aws-credentials-action-for-github-actions" target="_blank">AWS credentials to the Action</a>.
-* Set up <a href="https://github.com/iterative/setup-dvc" target="_blank">DVC in the action</a> and specify a command to `dvc pull`.
+```bash
+pip install -r requirements.txt
+```
 
-## Data
+---
 
-* Download census.csv from the data folder in the starter repository.
-   * Information on the dataset can be found <a href="https://archive.ics.uci.edu/ml/datasets/census+income" target="_blank">here</a>.
-* Create a remote DVC remote pointing to your S3 bucket and commit the data.
-* This data is messy, try to open it in pandas and see what you get.
-* To clean it, use your favorite text editor to remove all spaces.
-* Commit this modified data to DVC under a new name (we often want to keep the raw data untouched but then can keep updating the cooked version).
+## Run the Code
 
-## Model
+### Clean the data
+_(done only once in this experimental setting and stored in `data/census_cls.csv`)_
 
-* Using the starter code, write a machine learning model that trains on the clean data and saves the model. Complete any function that has been started.
-* Write unit tests for at least 3 functions in the model code.
-* Write a function that outputs the performance of the model on slices of the data.
-   * Suggestion: for simplicity, the function can just output the performance on slices of just the categorical features.
-* Write a model card using the provided template.
+```bash
+python src/preprocess_data.py
+```
 
-## API Creation
+### Train the Model
 
-* Create a RESTful API using FastAPI this must implement:
-   * GET on the root giving a welcome message.
-   * POST that does model inference.
-   * Type hinting must be used.
-   * Use a Pydantic model to ingest the body from POST. This model should contain an example.
-    * Hint: the data has names with hyphens and Python does not allow those as variable names. Do not modify the column names in the csv and instead use the functionality of FastAPI/Pydantic/etc to deal with this.
-* Write 3 unit tests to test the API (one for the GET and two for POST, one that tests each prediction).
+```bash
+python src/train_model.py
+```
+---
 
-## API Deployment
+## Testing
 
-* Create a free Heroku account (for the next steps you can either use the web GUI or download the Heroku CLI).
-* Create a new app and have it deployed from your GitHub repository.
-   * Enable automatic deployments that only deploy if your continuous integration passes.
-   * Hint: think about how paths will differ in your local environment vs. on Heroku.
-   * Hint: development in Python is fast! But how fast you can iterate slows down if you rely on your CI/CD to fail before fixing an issue. I like to run flake8 locally before I commit changes.
-* Set up DVC on Heroku using the instructions contained in the starter directory.
-* Set up access to AWS on Heroku, if using the CLI: `heroku config:set AWS_ACCESS_KEY_ID=xxx AWS_SECRET_ACCESS_KEY=yyy`
-* Write a script that uses the requests module to do one POST on your live API.
+Unit and integration tests are located in the `src/tests/` directory.
+
+```bash
+pytest
+```
+
+---
+
+## Code Quality & Linting
+
+This project uses the following tools:
+
+- [`flake8`](https://flake8.pycqa.org/) – code style and linting
+- [`black`](https://black.readthedocs.io/) – automatic code formatting
+- [`isort`](https://pycqa.github.io/isort/) – import sorting
+- [`mypy`](https://mypy.readthedocs.io/) – static type checking
+- [`pytest`](https://docs.pytest.org/) – testing framework
+- [`pre-commit`](https://pre-commit.com/) – run all of the above on each commit
+
+### Enable pre-commit hooks:
+
+```bash
+pre-commit install
+pre-commit run --all-files  # optional: run manually
+```
+---
+
+## Run the APP
+### Run the FastAPI server
+
+```bash
+uvicorn main:app --reload
+```
+
+Then go to: [http://localhost:8000/docs](http://localhost:8000/docs)
+
+---
+
+## 📄 Model Card
+
+Details on the model training process, intended use, metrics, and ethical considerations are available in:
+
+👉 [`model_card.md`](./model_card.md)
+
+---
+
+## 📝 License
+
+[GPL-3.0](https://www.gnu.org/licenses/#GPL)  
+
+---
