@@ -28,3 +28,4 @@ repos:
         entry: mypy
         language: system
         types: [python]
+        exclude: tests/
